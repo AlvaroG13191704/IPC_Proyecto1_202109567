@@ -1,5 +1,6 @@
 package clases;
 
+import com.itextpdf.text.DocumentException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -564,6 +565,26 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
             } catch (ParseException ex) {
                 
             }
+            
+            try
+            {
+                if (com3.getSelectedItem().toString() == "1") {
+                    Main.PDFUsuarios();
+                    JOptionPane.showMessageDialog(this, "Se ha generado un PDF de usuarios");
+                    
+                } else if (com3.getSelectedItem().toString() == "2") {
+                    //Generar reporte de libros
+                    
+                    Main.PDFLibro();
+                    JOptionPane.showMessageDialog(this, "Se ha generado un PDF de libros");
+                } else if (com3.getSelectedItem().toString() == "3") {
+                    Main.PDFPrestamo();
+                    JOptionPane.showMessageDialog(this, "Se ha generado un PDF de prestamos");
+                }
+            } catch (DocumentException ex)
+            {
+                Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
     }
@@ -591,7 +612,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         String fechaActual = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
         return fechaActual;
     }
-
+    //Tabla libros
     public static void tableroLibros() {
 
         librosDatos = Main.tablaLibros();

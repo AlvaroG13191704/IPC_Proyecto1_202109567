@@ -8,7 +8,7 @@ public class Usuarios {
     private String facultad;
     private String carrera;
     private Long tipo; //Tipo 1 será administrador, Tipo 2 será usuario
-
+    
     public Usuarios(Long iD, String usuario, String password, String facultad, String carrera, Long tipo) {
         this.iD = iD;
         this.usuario = usuario;

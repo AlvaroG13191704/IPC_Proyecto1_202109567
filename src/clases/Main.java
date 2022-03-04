@@ -1,10 +1,30 @@
 package clases;
 
+
+
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPCell;
+
 import java.awt.Color;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -30,12 +50,12 @@ public class Main {
         //Ventana login
         login = new Login();
         //Agregando un admin
-        Usuarios admin = new Usuarios(0l, "admin", "123");
-        Libros libroInicial = new Libros(1l, "Mate Aplicada 1", "Alvaro", "Revista", 3l, 3l, 0l);
-        Usuarios usuarioInicial = new Usuarios(1l, "Alvaro", "123", "Ingenieria", "Ciencias y Sistemas", 1l);
-        Main.agregarLibro(libroInicial);
-        Main.agregarUsuario(usuarioInicial);
-        Main.agregarUsuario(admin);
+        //Usuarios admin = new Usuarios(0l, "admin", "123");
+//        Libros libroInicial = new Libros(1l, "Mate Aplicada 1", "Alvaro", "Revista", 3l, 3l, 0l);
+        //Usuarios usuarioInicial = new Usuarios(1l, "Alvaro", "123", "Administrador", "Administrador", 1l);
+        //Main.agregarLibro(libroInicial);
+        //Main.agregarUsuario(usuarioInicial);
+        //Main.agregarUsuario(admin);
 
         Main.leerUsuarios();
         Main.leerLibros();
@@ -251,6 +271,144 @@ public class Main {
         }
         return arregloTabla3;
     }
-    
+    //Metodo que crea los pdf de usuarios
+    public static void PDFUsuarios() throws DocumentException, FileNotFoundException{
+        Document documento = new Document(PageSize.LETTER);
+        
+        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Usuarios\\"+"fechahora" + ".pdf");
+        PdfWriter.getInstance(documento, archivo);
+        documento.open();
+        Paragraph p = new Paragraph();
+        Paragraph p2 = new Paragraph();
+        p.add("REPORTES BIBLIOTECA USAC");
+        p.setAlignment(1);
+        p2.add("Registro de usuarios en el sistema");
+        p2.setAlignment(1);
+        //Creamos la tabla registro de libros
+        PdfPTable tabla = new PdfPTable(5);
+        tabla.setHorizontalAlignment(1);
+        tabla.addCell("ID");
+        tabla.addCell("Usuario");
+        tabla.addCell("Facultad");
+        tabla.addCell("Carrera");
+        tabla.addCell("Tipo");
+        for (int i = 0; i < Main.cUsers; i++){
+            tabla.addCell(Main.users[i].getiD().toString());
+            tabla.addCell(Main.users[i].getUsuario());
+            tabla.addCell(Main.users[i].getFacultad());
+            tabla.addCell(Main.users[i].getCarrera());
+            tabla.addCell(Main.users[i].getTipo().toString());
+        }
+        //Agregar
+        documento.add(p);
+        documento.add(Chunk.NEWLINE);
+        documento.add(p2);
+        documento.add(Chunk.NEWLINE);
+        documento.add(tabla);
+        documento.close();
+    }
+    //Metodo que crea los pdf de libros
+    public static void PDFLibro() throws DocumentException, FileNotFoundException{
+        Document documento = new Document(PageSize.LETTER);
+        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Libros\\"+"fechahora" + ".pdf");
+        PdfWriter.getInstance(documento, archivo);
+        documento.open();
+        Paragraph p = new Paragraph();
+        Paragraph p1 = new Paragraph();
+        Paragraph p2 = new Paragraph();
+        p.add("REPORTES BIBLIOTECA USAC");
+        p.setAlignment(1);
+        p1.add("Registro de administrador");
+        p1.setAlignment(1);
+        //Tabla de usuario
+        PdfPTable tablaAdmin = new PdfPTable(4);
+        tablaAdmin.setHorizontalAlignment(1);
+        tablaAdmin.addCell("ID");
+        tablaAdmin.addCell("Nombre");
+        tablaAdmin.addCell("Carrera");
+        tablaAdmin.addCell("Tipo");
+        tablaAdmin.addCell(Main.adminNow[0].getiD().toString());
+        tablaAdmin.addCell(Main.adminNow[0].getUsuario());
+        tablaAdmin.addCell(Main.adminNow[0].getCarrera());
+        tablaAdmin.addCell(Main.adminNow[0].getTipo().toString());
+        p2.add("Registro de libros en el sistema");
+        p2.setAlignment(1);
+        //Creamos la tabla registro de libros
+        PdfPTable tabla = new PdfPTable(4);
+        tabla.setHorizontalAlignment(1);
+        tabla.addCell("ID");
+        tabla.addCell("Titulo");
+        tabla.addCell("Autor");
+        tabla.addCell("Tipo");
+        for (int i = 0; i < Main.cLibros; i++){
+            tabla.addCell(Main.libros[i].getID().toString());
+            tabla.addCell(Main.libros[i].getTitulo());
+            tabla.addCell(Main.libros[i].getAutor());
+            tabla.addCell(Main.libros[i].getTipo());
+        }
+        //Agregar
+        documento.add(p);
+        documento.add(Chunk.NEWLINE);
+        documento.add(p1);
+        documento.add(Chunk.NEWLINE);
+        documento.add(tablaAdmin);
+        documento.add(Chunk.NEWLINE);
+        documento.add(p2);
+        documento.add(Chunk.NEWLINE);
+        documento.add(tabla);
+        documento.close();
+    }
+    //Metodo que crea los pdf de los prestamos
+    public static void PDFPrestamo() throws DocumentException, FileNotFoundException{
+        Document documento = new Document(PageSize.LETTER);
+     
+        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Prestamos"+"fechahora" + ".pdf");
+        PdfWriter.getInstance(documento, archivo);
+        documento.open();
+        Paragraph p = new Paragraph();
+        Paragraph p1 = new Paragraph();
+        Paragraph p2 = new Paragraph();
+        p.add("REPORTES BIBLIOTECA USAC");
+        p.setAlignment(1);
+        p1.add("Registro de administrador");
+        p1.setAlignment(1);
+        //Tabla de usuario
+        PdfPTable tablaAdmin = new PdfPTable(4);
+        tablaAdmin.setHorizontalAlignment(1);
+        tablaAdmin.addCell("ID");
+        tablaAdmin.addCell("Nombre");
+        tablaAdmin.addCell("Carrera");
+        tablaAdmin.addCell("Tipo");
+        tablaAdmin.addCell(Main.adminNow[0].getiD().toString());
+        tablaAdmin.addCell(Main.adminNow[0].getUsuario());
+        tablaAdmin.addCell(Main.adminNow[0].getCarrera());
+        tablaAdmin.addCell(Main.adminNow[0].getTipo().toString());
+        p2.add("Registro de prestamos en el sistema");
+        p2.setAlignment(1);
+        //Creamos la tabla registro de libros
+        PdfPTable tabla = new PdfPTable(4);
+        tabla.setHorizontalAlignment(1);
+        tabla.addCell("Usuario");
+        tabla.addCell("Libro");
+        tabla.addCell("Fecha de entrega");
+        tabla.addCell("Status");
+        for (int i = 0; i < Main.cPrestamos; i++){
+            tabla.addCell(Main.prestamos[i].getUsuarioID());
+            tabla.addCell(Main.prestamos[i].getLibroID());
+            tabla.addCell(Main.prestamos[i].getFechaEntrega());
+            tabla.addCell(Main.prestamos[i].getStatus());
+        }
+        //Agregar
+        documento.add(p);
+        documento.add(Chunk.NEWLINE);
+        documento.add(p1);
+        documento.add(Chunk.NEWLINE);
+        documento.add(tablaAdmin);
+        documento.add(Chunk.NEWLINE);
+        documento.add(p2);
+        documento.add(Chunk.NEWLINE);
+        documento.add(tabla);
+        documento.close();
+    }
 
 }

@@ -94,7 +94,13 @@ public class CargaMasivaUsuario extends JFrame implements ActionListener {
                 facultad = (String) objeto_value.get("Facultad");
                 carrera = (String) objeto_value.get("Carrera");
                 tipo = (Long) objeto_value.get("Tipo");
-
+                
+                //Sumar los contadores
+                if(tipo == 1l){
+                    Main.ctipoAdmin ++;
+                }else{
+                    Main.ctipoEstudiante ++;
+                }
                 //Se crea un nuevo usuario
                 Usuarios UsuariosMasivos = new Usuarios(iD, usuario, password, facultad, carrera, tipo);
                 //Usuario repetido

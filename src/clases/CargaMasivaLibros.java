@@ -119,6 +119,8 @@ public class CargaMasivaLibros extends JFrame implements ActionListener {
                 //Agregar libro
                 Main.agregarLibro(nuevoLibro);
                 //Cargar tablero
+                //Guardar que tiplo de libro es
+                Main.tipoLibros(tipo);
                 
             }          
             JOptionPane.showMessageDialog(this, "Se ha agregado la carga masiva de libros");

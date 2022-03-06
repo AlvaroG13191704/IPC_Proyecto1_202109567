@@ -31,8 +31,7 @@ public class CargaMasivaPrestamos extends JFrame implements ActionListener {
     private String fechaEntrega = null;
     private Long IDUsuario;
     private Long IDLibro;
-   
-    
+
     public CargaMasivaPrestamos() {
         Font font = new Font("SansSerif", Font.BOLD, 20);
         //TextArea
@@ -72,16 +71,20 @@ public class CargaMasivaPrestamos extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == b2) {
-            try {
+        if (e.getSource() == b2)
+        {
+            try
+            {
                 PantallaPrincipal principal = new PantallaPrincipal();
-            } catch (ParseException ex) {
+            } catch (ParseException ex)
+            {
 
             }
             this.dispose();
 
         }
-        if (e.getSource() == b1) {
+        if (e.getSource() == b1)
+        {
 
             String texto = ta1.getText();
 
@@ -91,52 +94,77 @@ public class CargaMasivaPrestamos extends JFrame implements ActionListener {
             Object jsonarrayoPrestamo = obteto.get("Prestamos");
             JSONArray arrayobjetoPrestamo = (JSONArray) jsonarrayoPrestamo;
 
-            for (Object objeto_inarray : arrayobjetoPrestamo) {
+            for (Object objeto_inarray : arrayobjetoPrestamo)
+            {
                 JSONObject objeto_value = (JSONObject) objeto_inarray;
                 IDUsuario = (Long) objeto_value.get("IDUsuario");
                 IDLibro = (Long) objeto_value.get("IDLibro");
                 fechaEntrega = (String) objeto_value.get("FechaEntrega");
 
                 //Transformar ese Long a el nombre que pertenece el ID
-                for (int i = 0; i < Main.cUsers; i++) {
-                    if (Main.users[i].getiD().equals(IDUsuario)) {
+                for (int i = 0; i < Main.cUsers; i++)
+                {
+                    if (Main.users[i].getiD().equals(IDUsuario))
+                    {
                         nombreUsuario = Main.users[i].getUsuario();
                     }
 
                 }
-                for (int i = 0; i < Main.cLibros; i++) {
-                    if (Main.libros[i].getID().equals(IDLibro)) {
+                for (int i = 0; i < Main.cLibros; i++)
+                {
+                    if (Main.libros[i].getID().equals(IDLibro))
+                    {
                         nombreLibro = Main.libros[i].getTitulo();
                     }
 
                 }
-                
+
                 //Se crea un nuevo prestamo
                 Prestamos nuevoPrestamo = null;
-                try {
-                    nuevoPrestamo = new Prestamos(nombreUsuario, nombreLibro, fechaEntrega,PantallaPrincipal.verificarFecha(fechaEntrega));
-                } catch (ParseException ex) {
-                    
+                try
+                {
+                    nuevoPrestamo = new Prestamos(nombreUsuario, nombreLibro, fechaEntrega, PantallaPrincipal.verificarFecha(fechaEntrega));
+                } catch (ParseException ex)
+                {
+
                 }
                 //Agregar libro
                 Main.agregarPrestamo(nuevoPrestamo);
-                try {
+                try
+                {
                     //Administrar disponibles y ocupados en libros
                     //Posible error----------------------
-                    
-                    if(PantallaPrincipal.verificarFecha(fechaEntrega) == "Entregado"){
-                        Main.administrarPrestamosEntregado(nombreLibro);
-                    } else if(PantallaPrincipal.verificarFecha(fechaEntrega) == "Prestado"){
+
+                    if (PantallaPrincipal.verificarFecha(fechaEntrega) == "Prestado")
+                    {
                         Main.administrarPrestamosPrestado(nombreLibro);
                     }
-                } catch (ParseException ex) {
-                    
+                } catch (ParseException ex)
+                {
+
                 }
+                //Verifica que el prestamo sea prestado
+                try
+                {
+                    if (PantallaPrincipal.verificarFecha(fechaEntrega).equals("Prestado"))
+                    {
+                        //Metodo de contadores del mes
+                        int numeroMes = PantallaPrincipal.obtenerMes(fechaEntrega);
+                        Main.tipoMes(numeroMes);
+                    }
+
+                } catch (ParseException ex)
+                {
+                    Logger.getLogger(CargaMasivaPrestamos.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
             JOptionPane.showMessageDialog(this, "Se ha agregado la carga masiva de prestamos");
             ta1.setText("");
             Main.leerPrestamo();
-
+            System.out.println("Prestamos en febrero: " + Main.marzo);
+            System.out.println("Prestamos en febrero: " + Main.abril);
+            System.out.println("Prestamos en febrero: " + Main.mayo);
         }
     }
 }

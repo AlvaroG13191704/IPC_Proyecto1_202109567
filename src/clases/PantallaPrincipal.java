@@ -4,6 +4,7 @@ import com.itextpdf.text.DocumentException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -15,11 +16,18 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+
 public class PantallaPrincipal extends JFrame implements ActionListener {
 
     Font font, font2;
     private JTabbedPane pestañas;
-    private JPanel panelLibros, panelPrestamos, panelReportes, panelGraficos;
+    static private JPanel panelLibros, panelPrestamos, panelReportes, panelGraficos;
     //Primera pestaña
     static private JPanel p1, p2;
     private JLabel lb1, lb2, lb3, lb4, lb5;
@@ -73,6 +81,9 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
     public PantallaPrincipal() throws ParseException {
         font = new Font("SansSerif", Font.BOLD, 17);
         font2 = new Font("SansSerif", Font.BOLD, 16);
+
+        System.out.println("Cantidad de usuarios admin: " + Main.ctipoAdmin);
+        System.out.println("Cantidad de usuarios estudiantes: " + Main.ctipoEstudiante);
 
         //new Color(211, 207, 199) new Color(198, 135, 8 )
         //Pestañas
@@ -222,7 +233,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         com3.addItem("1");
         com3.addItem("2");
         com3.addItem("3");
-        
+
         //Aca van las tablas
         p3_2 = new JPanel();
         p3_2.setLayout(null);
@@ -232,7 +243,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         //PANEL GRAFICOS
         panelGraficos = new JPanel();
         panelGraficos.setBackground(new Color(232, 167, 28));
-
+        panelGraficos.setLayout(null);
         //Frame
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setBounds(0, 0, 1400, 750);
@@ -241,7 +252,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         this.setResizable(false);
         this.setVisible(true);
         this.setTitle("PANTALLA PRINCIPAL");
-        
+
         //add
         this.add(pestañas);
         pestañas.addTab("Libros", panelLibros);
@@ -283,41 +294,56 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         p3_1.add(b3_1);
         p3_1.add(lb3_1);
         p3_1.add(com3);
+
+        //Agregar grafica
+        grafica1();
+        grafica2();
+        grafica3();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == b1) {
+        if (e.getSource() == b1)
+        {
 
             ID = Long.parseLong(tf1.getText());
             boolean validarID = verificarIDLibro();
-            if (validarID) {
+            if (validarID)
+            {
                 JOptionPane.showMessageDialog(this, "EL ID del libro ya existe \n Ingrese nuevamente");
                 tf1.setText("");
 
-            } else {
+            } else
+            {
                 libro = tf2.getText();
                 autor = tf3.getText();
                 copias = Long.parseLong(tf4.getText());
                 ID = Long.parseLong(tf1.getText());
-                if (com1.getSelectedItem().toString() == "1") {
+                if (com1.getSelectedItem().toString() == "1")
+                {
                     tipo = "Libro";
-                } else if (com1.getSelectedItem().toString() == "2") {
+                } else if (com1.getSelectedItem().toString() == "2")
+                {
                     tipo = "Revista";
-                } else if (com1.getSelectedItem().toString() == "3") {
+                } else if (com1.getSelectedItem().toString() == "3")
+                {
                     tipo = "Libro electronico";
                 }
+                
 
                 //Creando el objeto libro
                 Libros libroNuevo = new Libros(ID, libro, autor, tipo, copias, copias, 0l);
                 Main.agregarLibro(libroNuevo);
                 Main.leerLibros();
-
+                //Guardar que tiplo de libro es
+                Main.tipoLibros(tipo);
                 //Se actualiza la tabla cada vez que se agrega un libro
                 this.dispose();
-                try {
+                try
+                {
                     PantallaPrincipal principal = new PantallaPrincipal();
-                } catch (ParseException ex) {
+                } catch (ParseException ex)
+                {
 
                 }
 
@@ -333,50 +359,75 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
             }
 
         }
-        if (e.getSource() == b2) {
+        if (e.getSource() == b2)
+        {
             //Creando la ventana
             CargaMasivaLibros cargaLibros = new CargaMasivaLibros();
             this.dispose();
         }
         //Crear un prestamo, se valida la existencia de ID y y se crea un objeto prestamos
-        if (e.getSource() == b2_1) {
+        if (e.getSource() == b2_1)
+        {
             IDUsuario = Long.parseLong(tf2_1.getText());
             IDLibro = Long.parseLong(tf2_2.getText());
             fechaEntrega = tf2_3.getText();
 
+            try
+            {
+                if (PantallaPrincipal.verificarFecha(fechaEntrega).equals("Prestado"))
+                {
+                    //Metodo de contadores del mes
+                    int numeroMes = PantallaPrincipal.obtenerMes(fechaEntrega);
+                    Main.tipoMes(numeroMes);
+                    System.out.println("Mes no. " + numeroMes);
+                }
+
+            } catch (ParseException ex)
+            {
+                Logger.getLogger(CargaMasivaPrestamos.class.getName()).log(Level.SEVERE, null, ex);
+            }
             //Verificar que este en el sistema el libro y usuario
             boolean prestamoEs = Main.verificarPrestamo(IDUsuario, IDLibro);
             //HACER MEJOR UN SWITCH JUSTO ACA
 
-            if (prestamoEs) {
-                try {
+            if (prestamoEs)
+            {
+                try
+                {
                     //Transformar ese Long a el nombre que pertenece el ID
-                    for (int i = 0; i < Main.cUsers; i++) {
-                        if (Main.users[i].getiD().equals(IDUsuario)) {
+                    for (int i = 0; i < Main.cUsers; i++)
+                    {
+                        if (Main.users[i].getiD().equals(IDUsuario))
+                        {
                             prestamoUsuario = Main.users[i].getUsuario();
                         }
 
                     }
-                    for (int i = 0; i < Main.cLibros; i++) {
-                        if (Main.libros[i].getID().equals(IDLibro)) {
+                    for (int i = 0; i < Main.cLibros; i++)
+                    {
+                        if (Main.libros[i].getID().equals(IDLibro))
+                        {
                             prestamoLibro = Main.libros[i].getTitulo();
                         }
 
                     }
                     //Si disponibles y ocupados 
-                    if (Main.verificarDisponibles()) {
+                    if (Main.verificarDisponibles())
+                    {
                         JOptionPane.showMessageDialog(this, "Ya no hay libros disponibles para prestar");
-                    }
-                    //Si ocupados es lo max de copias ya no se puede hacer prestados
-                    else if(Main.verificarOcupadosMax()){
+                    } //Si ocupados es lo max de copias ya no se puede hacer prestados
+                    else if (Main.verificarOcupadosMax())
+                    {
                         JOptionPane.showMessageDialog(this, "Ya estan todas las copias ocupadas");
-                    }
-                    //Si ocupados es cero y la fecha de entrega es entregado entonces no se hace nada solo se carga
-                    else if(Main.verificarDisponibles() != true && Main.verificarOcupados() && verificarFecha(fechaEntrega) =="Entregado"){
+                    } //Si disponibles es diferente de cero, ocupados es igual a cero y la fecha es entregado, entonces solo se agrega el prestamo
+                    else if (Main.verificarDisponibles() != true && Main.verificarOcupados() != true && verificarFecha(fechaEntrega) == "Entregado")
+                    {
                         Prestamos prestamoNuevo = null;
-                        try {
+                        try
+                        {
                             prestamoNuevo = new Prestamos(prestamoUsuario, prestamoLibro, fechaEntrega, verificarFecha(fechaEntrega));
-                        } catch (ParseException ex) {
+                        } catch (ParseException ex)
+                        {
 
                         }
                         Main.agregarPrestamo(prestamoNuevo);
@@ -395,48 +446,22 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
                         Main.leerLibros();
                         Main.leerPrestamo();
                         this.dispose();
-                        try {
+                        try
+                        {
                             PantallaPrincipal principal = new PantallaPrincipal();
-                        } catch (ParseException ex) {
+                        } catch (ParseException ex)
+                        {
 
                         }
-                    }
-                    //Si disponibles es diferente de cero, ocupados es igual a cero y la fecha es entregado, entonces no se puede entregar un libro si no hay ningun prestado
-                    else if(Main.verificarDisponibles() != true && Main.verificarOcupados() != true && verificarFecha(fechaEntrega) =="Entregado"){
+                    } //Si disponibles es diferente de 0 y la fecha de entrega es prestado, entonces se le suma a ocupados y se le resta a disponibles
+                    else if (Main.verificarDisponibles() != true && verificarFecha(fechaEntrega) == "Prestado")
+                    {
                         Prestamos prestamoNuevo = null;
-                        try {
+                        try
+                        {
                             prestamoNuevo = new Prestamos(prestamoUsuario, prestamoLibro, fechaEntrega, verificarFecha(fechaEntrega));
-                        } catch (ParseException ex) {
-
-                        }
-                        Main.agregarPrestamo(prestamoNuevo);
-                        Main.administrarPrestamosEntregado(prestamoLibro);
-                        JOptionPane.showMessageDialog(this, "Se ha hecho un prestamo correctamente");
-                        tf2_1.setText("");
-                        tf2_2.setText("");
-                        tf2_3.setText("");
-
-                        //Actualizar
-                        prestamoUsuario = null;
-                        prestamoLibro = null;
-
-                        //Leer
-                        Main.leerUsuarios();
-                        Main.leerLibros();
-                        Main.leerPrestamo();
-                        this.dispose();
-                        try {
-                            PantallaPrincipal principal = new PantallaPrincipal();
-                        } catch (ParseException ex) {
-
-                        }
-                    }
-                    //Si disponibles es diferente de 0 y la fecha de entrega es prestado, entonces se le suma a ocupados y se le resta a disponibles
-                    else if (Main.verificarDisponibles() != true && verificarFecha(fechaEntrega) == "Prestado") {
-                        Prestamos prestamoNuevo = null;
-                        try {
-                            prestamoNuevo = new Prestamos(prestamoUsuario, prestamoLibro, fechaEntrega, verificarFecha(fechaEntrega));
-                        } catch (ParseException ex) {
+                        } catch (ParseException ex)
+                        {
 
                         }
                         Main.agregarPrestamo(prestamoNuevo);
@@ -455,22 +480,26 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
                         Main.leerLibros();
                         Main.leerPrestamo();
                         this.dispose();
-                        try {
+                        try
+                        {
                             PantallaPrincipal principal = new PantallaPrincipal();
-                        } catch (ParseException ex) {
+                        } catch (ParseException ex)
+                        {
 
                         }
-                    }
-                    //Si disponibles es diferente de cero y la fecha es entregado, entonces se le suma a disponibles y se le resta a ocupados
-                    else if(Main.verificarDisponibles() != true && Main.verificarOcupados() !=true && verificarFecha(fechaEntrega) == "Entregado"){
+                    } //Si disponibles es diferente de cero y la fecha es entregado, entonces se le suma a disponibles y se le resta a ocupados
+                    else if (Main.verificarDisponibles() != true && Main.verificarOcupados() != true && verificarFecha(fechaEntrega) == "Entregado")
+                    {
                         Prestamos prestamoNuevo = null;
-                        try {
+                        try
+                        {
                             prestamoNuevo = new Prestamos(prestamoUsuario, prestamoLibro, fechaEntrega, verificarFecha(fechaEntrega));
-                        } catch (ParseException ex) {
+                        } catch (ParseException ex)
+                        {
 
                         }
                         Main.agregarPrestamo(prestamoNuevo);
-                        Main.administrarPrestamosEntregado(prestamoLibro);
+                        //Main.administrarPrestamosEntregado(prestamoLibro);
                         JOptionPane.showMessageDialog(this, "Se ha hecho un prestamo correctamente");
                         tf2_1.setText("");
                         tf2_2.setText("");
@@ -485,22 +514,26 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
                         Main.leerLibros();
                         Main.leerPrestamo();
                         this.dispose();
-                        try {
+                        try
+                        {
                             PantallaPrincipal principal = new PantallaPrincipal();
-                        } catch (ParseException ex) {
+                        } catch (ParseException ex)
+                        {
 
                         }
-                    }
-                    //Si disponibles es igual a cero, ocupados diferente de cero y la fecha es entregado, entonces se le suma uno a disponibles y se le resta a ocupados
-                    else if(Main.verificarDisponibles() && Main.verificarOcupados() !=true && verificarFecha(fechaEntrega) == "Entregado"){
+                    } //Si disponibles es igual a cero, ocupados diferente de cero y la fecha es entregado, entonces se le suma uno a disponibles y se le resta a ocupados
+                    else if (Main.verificarDisponibles() && Main.verificarOcupados() != true && verificarFecha(fechaEntrega) == "Entregado")
+                    {
                         Prestamos prestamoNuevo = null;
-                        try {
+                        try
+                        {
                             prestamoNuevo = new Prestamos(prestamoUsuario, prestamoLibro, fechaEntrega, verificarFecha(fechaEntrega));
-                        } catch (ParseException ex) {
+                        } catch (ParseException ex)
+                        {
 
                         }
                         Main.agregarPrestamo(prestamoNuevo);
-                        Main.administrarPrestamosEntregado(prestamoLibro);
+                        //Main.administrarPrestamosEntregado(prestamoLibro);
                         JOptionPane.showMessageDialog(this, "Se ha hecho un prestamo correctamente");
                         tf2_1.setText("");
                         tf2_2.setText("");
@@ -515,19 +548,22 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
                         Main.leerLibros();
                         Main.leerPrestamo();
                         this.dispose();
-                        try {
+                        try
+                        {
                             PantallaPrincipal principal = new PantallaPrincipal();
-                        } catch (ParseException ex) {
+                        } catch (ParseException ex)
+                        {
 
                         }
                     }
-                    
-                    
-                } catch (ParseException ex) {
+
+                } catch (ParseException ex)
+                {
 
                 }
 
-            } else {
+            } else
+            {
                 JOptionPane.showMessageDialog(this, "Algún ID no existe");
                 tf2_1.setText("");
                 tf2_2.setText("");
@@ -535,53 +571,67 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
 
         }
         //Carga masiva de prestamos
-        if (e.getSource() == b2_2) {
+        if (e.getSource() == b2_2)
+        {
             System.out.println("Click carga masiva de prestamos");
             //Creando la nueva ventana
             CargaMasivaPrestamos cargaPrestamos = new CargaMasivaPrestamos();
             this.dispose();
         }
-        if(e.getSource() == b3_1){
+        if (e.getSource() == b3_1)
+        {
             System.out.println("Click en generar reporte");
             //Poner que tipo es y dependiendo de eso genera el reporte
             fechaDeGeneracion = generarFecha();
             usuarioEnUso = Main.adminNow[0].getUsuario();
-            if (com3.getSelectedItem().toString() == "1") {
-                    tipodeReporte = "Reporte de usuarios";
-                    
-                } else if (com3.getSelectedItem().toString() == "2") {
-                    tipodeReporte = "Reporte de libros";
-                } else if (com3.getSelectedItem().toString() == "3") {
-                    tipodeReporte = "Reporte de prestamos";
-                }
+            if (com3.getSelectedItem().toString() == "1")
+            {
+                tipodeReporte = "Reporte de usuarios";
+
+            } else if (com3.getSelectedItem().toString() == "2")
+            {
+                tipodeReporte = "Reporte de libros";
+            } else if (com3.getSelectedItem().toString() == "3")
+            {
+                tipodeReporte = "Reporte de prestamos";
+            }
             //Se crea el objeto
             Reportes reporteNuevo = new Reportes(fechaDeGeneracion, usuarioEnUso, tipodeReporte);
             Main.agregarReporte(reporteNuevo);
             JOptionPane.showMessageDialog(this, "Se ha generado un reporte correctamente");
             Main.leerReportes();
             this.dispose();
-            try {
-                PantallaPrincipal principal = new PantallaPrincipal();
-            } catch (ParseException ex) {
-                
-            }
-            
             try
             {
-                if (com3.getSelectedItem().toString() == "1") {
-                    Main.PDFUsuarios();
+                PantallaPrincipal principal = new PantallaPrincipal();
+            } catch (ParseException ex)
+            {
+
+            }
+
+            try
+            {
+                if (com3.getSelectedItem().toString() == "1")
+                {
+                    Main.PDFUsuarios(fechaReportes());
                     JOptionPane.showMessageDialog(this, "Se ha generado un PDF de usuarios");
-                    
-                } else if (com3.getSelectedItem().toString() == "2") {
+
+                } else if (com3.getSelectedItem().toString() == "2")
+                {
                     //Generar reporte de libros
-                    
-                    Main.PDFLibro();
+
+                    Main.PDFLibro(fechaReportes());
                     JOptionPane.showMessageDialog(this, "Se ha generado un PDF de libros");
-                } else if (com3.getSelectedItem().toString() == "3") {
-                    Main.PDFPrestamo();
+                } else if (com3.getSelectedItem().toString() == "3")
+                {
+
+                    Main.PDFPrestamo(fechaReportes());
                     JOptionPane.showMessageDialog(this, "Se ha generado un PDF de prestamos");
                 }
             } catch (DocumentException ex)
+            {
+                Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (FileNotFoundException ex)
             {
                 Logger.getLogger(PantallaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -591,32 +641,57 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
 
     //Verificar la fecha de entrega de un prestamo
     public static String verificarFecha(String fecha) throws ParseException {
-        try {
+        try
+        {
             SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy"); //Importamos el modelo de lectura de fecha
             Calendar calendario = Calendar.getInstance();
             Date FechaActual = calendario.getTime();
 
             Date fechaIngresada = formatoFecha.parse(fecha);
-            if (FechaActual.before(fechaIngresada)) {
+            if (FechaActual.before(fechaIngresada))
+            {
                 return "Prestado";
-            } else {
+            } else
+            {
                 return "Entregado";
             }
-        } catch (ParseException ex) {
+        } catch (ParseException ex)
+        {
             System.out.println("ERORRRRRRESRJWEUJR");
         }
         return null;
     }
+
+    //Obtener el mes del año
+    public static int obtenerMes(String fecha) throws ParseException {
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+        Date fechaActual = formatoFecha.parse(fecha);
+        SimpleDateFormat formatoMes= new SimpleDateFormat("MM");
+        String mes = formatoMes.format(fechaActual);
+        int numeroMes = Integer.parseInt(mes);
+        return numeroMes;
+    }
+
     //Generar la fecha y hora de hoy
-    public static String generarFecha(){
+    public static String generarFecha() {
         String fechaActual = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
         return fechaActual;
     }
+
+    //Generar fecha para los reportes
+    public static String fechaReportes() {
+        String fechaActual = new SimpleDateFormat("ddMMyyyyHHmmss").format(Calendar.getInstance().getTime());
+        return fechaActual;
+    }
+
     //Tabla libros
     public static void tableroLibros() {
 
         librosDatos = Main.tablaLibros();
-        String[] columnas1 = {"ID libro", "Nombre libro", "Autor", "Tipo", "Copias", "Disponibles", "Ocupados"};
+        String[] columnas1 =
+        {
+            "ID libro", "Nombre libro", "Autor", "Tipo", "Copias", "Disponibles", "Ocupados"
+        };
         table1 = new JTable(librosDatos, columnas1);
         scrolltable = new JScrollPane(table1);
         scrolltable.setBounds(0, 0, 950, 550);
@@ -628,7 +703,10 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
     //Imprimir tabla prestamos
     public static void tableroPrestamos() throws ParseException {
         prestamosDatos = Main.tablaPrestamos();
-        String[] columnas2 = {"Nombre Usuario", "Libro", "Fechad de Entrega", "Status"};
+        String[] columnas2 =
+        {
+            "Nombre Usuario", "Libro", "Fechad de Entrega", "Status"
+        };
         table2 = new JTable(prestamosDatos, columnas2);
 
         scrolltable2 = new JScrollPane(table2);
@@ -636,10 +714,14 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         scrolltable2.setVisible(true);
         p2_2.add(scrolltable2);
     }
+
     //Imprimir tabla reportes
-    public static void tableroReportes()  {
+    public static void tableroReportes() {
         reportesDatos = Main.tablaReportes();
-        String[] columnas3 = {"Fecha Generación", "Usuario", "Tipo de Reporte"};
+        String[] columnas3 =
+        {
+            "Fecha Generación", "Usuario", "Tipo de Reporte"
+        };
         table3 = new JTable(reportesDatos, columnas3);
 
         scrolltable3 = new JScrollPane(table3);
@@ -650,8 +732,10 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
 
     //Verificar repiticon del boolean
     public boolean verificarIDLibro() {
-        for (int i = 0; i < Main.cLibros; i++) {
-            if (Main.libros[i].getID() == ID) {
+        for (int i = 0; i < Main.cLibros; i++)
+        {
+            if (Main.libros[i].getID() == ID)
+            {
                 return true;
             }
 
@@ -659,4 +743,53 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         return false;
     }
 
+    //Grafica 1
+    public static void grafica1() {
+        DefaultPieDataset datos = new DefaultPieDataset();
+
+        datos.setValue("Administradores", Main.ctipoAdmin);
+        datos.setValue("Estudiantes", Main.ctipoEstudiante);
+
+        JFreeChart grafica1 = ChartFactory.createPieChart("Gráfica de usuarios registrados", datos, true, true, false);
+
+        ChartPanel panel = new ChartPanel(grafica1);
+        panel.setBounds(10, 10, 450, 500);
+        panelGraficos.add(panel);
+    }
+    //Grafica 2
+    public static void grafica2(){
+        DefaultCategoryDataset datos = new DefaultCategoryDataset();
+        datos.addValue(Main.enero, "Libros Prestados", "Ene");
+        datos.addValue(Main.febrero, "Libros Prestados", "Feb");
+        datos.addValue(Main.marzo, "Libros Prestados", "Mar");
+        datos.addValue(Main.abril, "Libros Prestados", "Abril");
+        datos.addValue(Main.mayo, "Libros Prestados", "May");
+        datos.addValue(Main.junio, "Libros Prestados", "Jun");
+        datos.addValue(Main.julio, "Libros Prestados", "Jul");
+        datos.addValue(Main.agosto, "Libros Prestados", "Ago");
+        datos.addValue(Main.septiembre, "Libros Prestados", "Sep");
+        datos.addValue(Main.octubre, "Libros Prestados", "Oct");
+        datos.addValue(Main.noviembre, "Libros Prestados", "Nov");
+        datos.addValue(Main.diciembre, "Libros Prestados", "Dic");
+        
+        JFreeChart graficoBarras = ChartFactory.createBarChart3D("Libros prestados 2022", "Meses", "Total de libros prestados", datos,PlotOrientation.VERTICAL,true,true,false);
+        ChartPanel panel = new ChartPanel(graficoBarras);
+        panel.setBounds(450, 10, 450, 500);
+        panelGraficos.add(panel);     
+        
+    }
+    //Grafica 3
+    public static void grafica3() {
+        DefaultPieDataset datos = new DefaultPieDataset();
+
+        datos.setValue("Libros", Main.ctipoLibros);
+        datos.setValue("Revistas", Main.ctipoRevista);
+        datos.setValue("Libros electronicos", Main.ctipoLibroElec);
+
+        JFreeChart grafica1 = ChartFactory.createPieChart("Gráfica tipos de libros", datos, true, true, false);
+
+        ChartPanel panel = new ChartPanel(grafica1);
+        panel.setBounds(920, 10, 450, 500);
+        panelGraficos.add(panel);
+    }
 }

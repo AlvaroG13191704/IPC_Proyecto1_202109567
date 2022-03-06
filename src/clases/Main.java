@@ -44,6 +44,28 @@ public class Main {
     public static int cLibros = 0; //Contador libros
     public static int cPrestamos = 0;//Contador prestamos
     public static int cReportes = 0;//Contador reportes
+    
+    //Contador para las graficas
+    public static int ctipoAdmin = 0; 
+    public static int ctipoEstudiante = 0;
+    //Contadores por los 12 meses que hay 
+    public static int enero = 0;
+    public static int febrero = 0;
+    public static int marzo = 0;
+    public static int abril = 0;
+    public static int mayo = 0;
+    public static int junio = 0;
+    public static int julio = 0;
+    public static int agosto = 0;
+    public static int septiembre = 0;
+    public static int octubre = 0;
+    public static int noviembre = 0;
+    public static int diciembre = 0;
+    //Contador por el tipo de libros 
+    public static int ctipoLibros = 0;
+    public static int ctipoRevista = 0;
+    public static int ctipoLibroElec = 0;
+    
 
     public static void main(String[] args) throws ParseException {
 
@@ -59,7 +81,7 @@ public class Main {
 
         Main.leerUsuarios();
         Main.leerLibros();
-
+        
         //PantallaPrincipal principal = new PantallaPrincipal();
 
     }
@@ -194,16 +216,6 @@ public class Main {
             }
         }
     }
-    //Administración de disponibles y ocupados, si es es entregado, se le suma a disponibles y se le resta a ocupados
-    public static void administrarPrestamosEntregado(String prestamoLibro){
-        for (int i = 0; i < cLibros; i++) {
-            if (libros[i].getTitulo().equals(prestamoLibro)) {
-                //Se actualiza disponibles y ocupados
-                libros[i].setDisponibles(libros[i].getDisponibles() + 1);
-                libros[i].setOcupados(libros[i].getOcupados() - 1);
-            }
-        }
-    }
 
     //Administrar que disponibles llegue a 0
     public static boolean verificarDisponibles() {
@@ -272,10 +284,10 @@ public class Main {
         return arregloTabla3;
     }
     //Metodo que crea los pdf de usuarios
-    public static void PDFUsuarios() throws DocumentException, FileNotFoundException{
+    public static void PDFUsuarios(String fechaActual) throws DocumentException, FileNotFoundException{
         Document documento = new Document(PageSize.LETTER);
         
-        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Usuarios\\"+"fechahora" + ".pdf");
+        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Usuarios\\reporteUsuarios_"+fechaActual + ".pdf");
         PdfWriter.getInstance(documento, archivo);
         documento.open();
         Paragraph p = new Paragraph();
@@ -308,9 +320,9 @@ public class Main {
         documento.close();
     }
     //Metodo que crea los pdf de libros
-    public static void PDFLibro() throws DocumentException, FileNotFoundException{
+    public static void PDFLibro(String fechaActual) throws DocumentException, FileNotFoundException{
         Document documento = new Document(PageSize.LETTER);
-        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Libros\\"+"fechahora" + ".pdf");
+        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Libros\\reporteLibros_"+fechaActual + ".pdf");
         PdfWriter.getInstance(documento, archivo);
         documento.open();
         Paragraph p = new Paragraph();
@@ -359,10 +371,10 @@ public class Main {
         documento.close();
     }
     //Metodo que crea los pdf de los prestamos
-    public static void PDFPrestamo() throws DocumentException, FileNotFoundException{
+    public static void PDFPrestamo(String fechaActual) throws DocumentException, FileNotFoundException{
         Document documento = new Document(PageSize.LETTER);
      
-        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Prestamos"+"fechahora" + ".pdf");
+        OutputStream archivo = new FileOutputStream("E:\\ReportesProyecto1\\Reportes_Prestamos\\reportePrestamos_"+fechaActual + ".pdf");
         PdfWriter.getInstance(documento, archivo);
         documento.open();
         Paragraph p = new Paragraph();
@@ -410,5 +422,67 @@ public class Main {
         documento.add(tabla);
         documento.close();
     }
+    //Metodo que cuenta los meses de los prestamos
+    public static void tipoMes(int numeroMes){
+        switch(numeroMes){
+            case 1:
+                Main.enero ++;
+                break;
+            case 2:
+                Main.febrero ++;
+                break;
+            case 3: 
+                Main.marzo ++;
+                break;
+            case 4: 
+                Main.abril ++;
+                break;
+            case 5: 
+                Main.mayo ++;
+                break;
+            case 6: 
+                Main.junio ++;
+                break;
+            case 7:
+                Main.julio ++;
+                break;
+            case 8:
+                Main.agosto ++;
+                break;
+            case 9:
+                Main.septiembre ++;
+                break;
+            case 10:
+                Main.octubre ++;
+                break;
+            case 11:
+                Main.noviembre ++;
+                break;
+            case 12:
+                Main.diciembre ++;
+                break;
+            default:
+                System.out.println("Error");
+                   
+        }
+    }
+    //Metodo para la cuenta de tipos de libros
+    public static void tipoLibros(String tipo){
+        switch(tipo){
+            case "Libro":
+                Main.ctipoLibros ++;
+                break;
+            case "Revista":
+                Main.ctipoRevista ++;
+                break;
+            case "Libro electronico":
+                Main.ctipoLibroElec ++;
+                break;
+            default:
+                System.out.println("Error");
+        }
+    }
+    
+    
 
 }

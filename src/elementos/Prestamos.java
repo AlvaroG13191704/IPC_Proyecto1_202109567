@@ -1,4 +1,4 @@
-package clases;
+package elementos;
 
 public class Prestamos {
 

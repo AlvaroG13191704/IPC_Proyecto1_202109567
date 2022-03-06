@@ -1,5 +1,11 @@
-package clases;
+package Interfaces;
 
+import cargasMasivas.CargaMasivaPrestamos;
+import cargasMasivas.CargaMasivaLibros;
+import elementos.Libros;
+import clases.Main;
+import elementos.Prestamos;
+import elementos.Reportes;
 import com.itextpdf.text.DocumentException;
 import java.awt.*;
 import java.awt.event.ActionEvent;

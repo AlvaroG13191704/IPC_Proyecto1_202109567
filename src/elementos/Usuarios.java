@@ -1,5 +1,5 @@
 
-package clases;
+package elementos;
 
 public class Usuarios {
     private Long iD;

@@ -1,5 +1,5 @@
 
-package clases;
+package elementos;
 
 public class Reportes {
    private String fechaGeneracion;

@@ -2,6 +2,11 @@ package clases;
 
 
 
+import elementos.Libros;
+import elementos.Prestamos;
+import elementos.Reportes;
+import elementos.Usuarios;
+import Interfaces.Login;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -31,7 +36,7 @@ import org.json.simple.JSONValue;
 public class Main {
 
     //VENTANAS
-    static Login login;
+    static public Login login;
 
     //AGREGAR TODOS LOS ARREGLOS QUE VAMOS A UTILIZAR
     public static Usuarios[] adminNow = new Usuarios[1]; //Persona que ingreso al programa con login y contraseña

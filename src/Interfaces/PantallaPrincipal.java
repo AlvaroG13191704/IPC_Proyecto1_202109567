@@ -100,7 +100,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         //PANELES DE LAS PESTAÑAS
         //PANEL LIBROS
         panelLibros = new JPanel();
-        panelLibros.setBackground(new Color(232, 167, 28));
+        panelLibros.setBackground(new Color(198, 135, 8));
         //panelLibros.setBounds(1, 1, 1300, 700);
         panelLibros.setLayout(null);
 
@@ -108,7 +108,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         p1 = new JPanel();
         p1.setLayout(null);
         p1.setBounds(10, 10, 350, 550);
-        p1.setBackground(new Color(198, 135, 8));
+        p1.setBackground(new Color(232, 167, 28));
 
         //Botones
         b2 = new JButton("Carga masiva");
@@ -160,19 +160,19 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         //Aca van las tablas
         p2 = new JPanel();
         p2.setLayout(null);
-        p2.setBackground(new Color(198, 135, 8));
+        p2.setBackground(new Color(232, 167, 28));
         p2.setBounds(400, 10, 950, 550);
         PantallaPrincipal.tableroLibros();
 
         //PANEL PRESTAMOS
         panelPrestamos = new JPanel();
-        panelPrestamos.setBackground(new Color(232, 167, 28));
+        panelPrestamos.setBackground(new Color(198, 135, 8));
         panelPrestamos.setLayout(null);
         //
         p2_1 = new JPanel();
         p2_1.setLayout(null);
         p2_1.setBounds(10, 10, 350, 550);
-        p2_1.setBackground(new Color(198, 135, 8));
+        p2_1.setBackground(new Color(232, 167, 28));
         //Botones
         b2_2 = new JButton("Carga masiva");
         b2_2.setLayout(null);
@@ -215,13 +215,13 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
 
         //PANEL REPROTES
         panelReportes = new JPanel();
-        panelReportes.setBackground(new Color(232, 167, 28));
+        panelReportes.setBackground(new Color(198, 135, 8));
         panelReportes.setLayout(null);
         //Paneles
         p3_1 = new JPanel();
         p3_1.setLayout(null);
         p3_1.setBounds(10, 10, 350, 350);
-        p3_1.setBackground(new Color(198, 135, 8));
+        p3_1.setBackground(new Color(232, 167, 28));
         //Boton
         b3_1 = new JButton("Generar");
         b3_1.setLayout(null);
@@ -243,12 +243,12 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         //Aca van las tablas
         p3_2 = new JPanel();
         p3_2.setLayout(null);
-        p3_2.setBackground(new Color(198, 135, 8));
+        p3_2.setBackground(new Color(232, 167, 28));
         p3_2.setBounds(400, 10, 950, 650);
         PantallaPrincipal.tableroReportes();
         //PANEL GRAFICOS
         panelGraficos = new JPanel();
-        panelGraficos.setBackground(new Color(232, 167, 28));
+        panelGraficos.setBackground(new Color(198, 135, 8));
         panelGraficos.setLayout(null);
         //Frame
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -528,7 +528,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
 
                         }
                     } //Si disponibles es igual a cero, ocupados diferente de cero y la fecha es entregado, entonces se le suma uno a disponibles y se le resta a ocupados
-                    else if (Main.verificarDisponibles() && Main.verificarOcupados() != true && verificarFecha(fechaEntrega) == "Entregado")
+                    else if (verificarFecha(fechaEntrega) == "Entregado")
                     {
                         Prestamos prestamoNuevo = null;
                         try
@@ -649,7 +649,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
     public static String verificarFecha(String fecha) throws ParseException {
         try
         {
-            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy"); //Importamos el modelo de lectura de fecha
+            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy"); 
             Calendar calendario = Calendar.getInstance();
             Date FechaActual = calendario.getTime();
 
@@ -699,7 +699,15 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
             "ID libro", "Nombre libro", "Autor", "Tipo", "Copias", "Disponibles", "Ocupados"
         };
         table1 = new JTable(librosDatos, columnas1);
+        DefaultTableModel modelo = new DefaultTableModel(librosDatos,columnas1){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        table1.setModel(modelo);
         scrolltable = new JScrollPane(table1);
+        
         scrolltable.setBounds(0, 0, 950, 550);
         scrolltable.setVisible(true);
         p2.add(scrolltable);
@@ -714,7 +722,13 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
             "Nombre Usuario", "Libro", "Fechad de Entrega", "Status"
         };
         table2 = new JTable(prestamosDatos, columnas2);
-
+        DefaultTableModel modelo2 = new DefaultTableModel(prestamosDatos,columnas2){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        table2.setModel(modelo2);
         scrolltable2 = new JScrollPane(table2);
         scrolltable2.setBounds(0, 0, 950, 550);
         scrolltable2.setVisible(true);
@@ -729,7 +743,13 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
             "Fecha Generación", "Usuario", "Tipo de Reporte"
         };
         table3 = new JTable(reportesDatos, columnas3);
-
+        DefaultTableModel modelo3 = new DefaultTableModel(reportesDatos,columnas3){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        table3.setModel(modelo3);
         scrolltable3 = new JScrollPane(table3);
         scrolltable3.setBounds(0, 0, 950, 650);
         scrolltable3.setVisible(true);
@@ -780,7 +800,7 @@ public class PantallaPrincipal extends JFrame implements ActionListener {
         
         JFreeChart graficoBarras = ChartFactory.createBarChart3D("Libros prestados 2022", "Meses", "Total de libros prestados", datos,PlotOrientation.VERTICAL,true,true,false);
         ChartPanel panel = new ChartPanel(graficoBarras);
-        panel.setBounds(450, 10, 450, 500);
+        panel.setBounds(450, 10, 470, 500);
         panelGraficos.add(panel);     
         
     }

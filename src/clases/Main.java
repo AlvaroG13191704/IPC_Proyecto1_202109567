@@ -16,6 +16,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPCell;
+import com.jtattoo.plaf.texture.TextureLookAndFeel;
 
 import java.awt.Color;
 import java.io.FileNotFoundException;
@@ -28,6 +29,8 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 
 import org.json.simple.JSONObject;
@@ -72,8 +75,9 @@ public class Main {
     public static int ctipoLibroElec = 0;
     
 
-    public static void main(String[] args) throws ParseException {
-
+    public static void main(String[] args) throws ParseException, UnsupportedLookAndFeelException {
+        //Aspecto
+        UIManager.setLookAndFeel(new  TextureLookAndFeel());
         //Ventana login
         login = new Login();
         //Agregando un admin
@@ -83,7 +87,7 @@ public class Main {
         //Main.agregarLibro(libroInicial);
         //Main.agregarUsuario(usuarioInicial);
         //Main.agregarUsuario(admin);
-
+        
         Main.leerUsuarios();
         Main.leerLibros();
         
@@ -105,9 +109,7 @@ public class Main {
         } else {
             JOptionPane.showMessageDialog(new Login(), "Se llego al limite");
         }
-
     }
-
     //Agregar libro
     public static void agregarLibro(Libros librosIngresados) {
         if (cLibros < libros.length) {
@@ -186,7 +188,6 @@ public class Main {
             }
         }
         return false;
-
     }
 
     //Verificar que exista ID en libros y usuario

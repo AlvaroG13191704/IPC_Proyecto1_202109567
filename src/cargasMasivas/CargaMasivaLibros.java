@@ -101,10 +101,8 @@ public class CargaMasivaLibros extends JFrame implements ActionListener {
             for (Object objeto_inarray : arrayobjetoLibro) {
                 JSONObject objeto_value = (JSONObject) objeto_inarray;
                 titulo = (String) objeto_value.get("Titulo");
-                //ID =  Integer.parseInt((Integer) objeto_value.get("ID"));
                 ID = (Long) objeto_value.get("ID");
                 autor = (String) objeto_value.get("Autor");
-                //esTipo = Integer.parseInt((String) objeto_value.get("Tipo"));
                 esTipo = (Long) objeto_value.get("Tipo");
                 if(esTipo == 1l){
                     tipo = "Libro";

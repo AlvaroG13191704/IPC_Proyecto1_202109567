@@ -71,7 +71,7 @@ public class Login extends JFrame implements ActionListener {
         this.add(lb2);
 
         //Frame
-        color = new Color(232, 167, 28);
+        color = new Color(198, 135, 8);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.getContentPane().setBackground(color);
         this.setLayout(null);

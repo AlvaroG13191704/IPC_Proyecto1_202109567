@@ -83,14 +83,15 @@ public class CargaMasivaUsuario extends JFrame implements ActionListener {
 
             String texto = ta1.getText();
 
-            Object jsonObteto = JSONValue.parse(texto);
-            JSONObject obteto = (JSONObject) jsonObteto;
+            Object jsonObjeto = JSONValue.parse(texto);
+            JSONObject objeto = (JSONObject) jsonObjeto;
 
-            Object jsonarrayoUsuario = obteto.get("Usuarios");
+            Object jsonarrayoUsuario = objeto.get("Usuarios");
             JSONArray arrayobjetoUsuario = (JSONArray) jsonarrayoUsuario;
 
             for (Object objeto_inarray : arrayobjetoUsuario) {
                 JSONObject objeto_value = (JSONObject) objeto_inarray;
+                
                 iD = (Long) objeto_value.get("ID");
                 usuario = (String) objeto_value.get("Usuario");
                 password = (String) objeto_value.get("Password");
